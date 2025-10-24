@@ -48,31 +48,47 @@ npm install
 
 ### 3. 设置 Supabase 数据库
 
-**Phase 1 数据库：**
+**一键设置完整数据库：**
 1. 登录 [Supabase](https://supabase.com) 控制台
 2. 打开 SQL Editor
-3. 执行 `supabase-schema.sql` 中的 SQL 语句
+3. 执行 `supabase-schema-complete.sql` 中的完整 SQL 语句
 
-**Phase 2 数据库（AI Chat）：**
-1. 继续在 SQL Editor 中
-2. 执行 `supabase-schema-phase2.sql` 中的 SQL 语句
+> **说明**: `supabase-schema-complete.sql` 是完整的数据库架构文件，包含了所有功能模块和优化。
 
-**Phase 3 数据库（好友 & 共享）：**
-1. 继续在 SQL Editor 中
-2. 执行 `supabase-schema-phase3.sql` 中的 SQL 语句
+**这将创建完整的数据库结构：**
 
-这将创建：
+**基础表：**
 - `profiles` 表（用户资料）
 - `notes` 表（笔记）
 - `note_embeddings` 表（向量化数据）
+
+**聊天功能表：**
 - `chat_messages` 表（聊天历史）
+
+**好友系统表：**
 - `friends` 表（好友关系）
 - `friend_requests` 表（好友请求）
+
+**笔记共享表：**
 - `note_shares` 表（笔记共享）
-- `search_notes` RPC 函数（向量搜索，支持共享笔记）
-- 辅助函数（接受/拒绝好友请求等）
-- Row Level Security (RLS) 策略
-- 向量搜索索引
+
+**功能函数：**
+- `search_notes()` - 向量搜索（支持共享笔记）
+- `accept_friend_request()` - 接受好友请求
+- `reject_friend_request()` - 拒绝好友请求
+- `are_friends()` - 检查好友关系
+- `get_friends_with_profiles()` - 获取好友列表
+- `get_shared_notes()` - 获取共享笔记
+
+**安全策略：**
+- 完整的 Row Level Security (RLS) 策略
+- 修复了 profiles 表的搜索权限
+- 修复了重复好友问题
+
+**性能优化：**
+- 向量搜索索引 (HNSW)
+- 基础查询索引
+- 自动更新时间戳触发器
 
 ### 4. 运行开发服务器
 
@@ -106,9 +122,11 @@ cnote/
 │   ├── supabase/                 # Supabase 客户端
 │   ├── db/                       # 数据库操作
 │   ├── embeddings/               # 向量化工具
+│   ├── llm/                      # LLM 集成 (DeepSeek)
+│   ├── mcp/                      # MCP 服务器
 │   └── utils/                    # 工具函数
 ├── middleware.ts                 # Next.js 中间件（认证）
-└── supabase-schema.sql          # 数据库 Schema
+└── supabase-schema-complete.sql  # 完整数据库架构
 ```
 
 ## 使用说明
@@ -246,10 +264,15 @@ cnote/
 
 - `GET /api/auth/callback` - Supabase 认证回调
 
-## 数据库 Schema
+## 数据库架构
 
-### profiles 表
+### 架构文件
 
+**数据库架构**: `supabase-schema-complete.sql` - 包含所有功能的完整数据库架构
+
+### 核心表结构
+
+#### profiles 表（用户资料）
 ```sql
 id            uuid (PK, FK to auth.users)
 username      text (unique)
@@ -258,8 +281,7 @@ created_at    timestamp
 updated_at    timestamp
 ```
 
-### notes 表
-
+#### notes 表（笔记）
 ```sql
 id          uuid (PK)
 user_id     uuid (FK to profiles)
@@ -270,29 +292,37 @@ created_at  timestamp
 updated_at  timestamp
 ```
 
-### note_embeddings 表
-
+#### note_embeddings 表（向量嵌入）
 ```sql
 id          uuid (PK)
 note_id     uuid (FK to notes)
 user_id     uuid (FK to profiles)
 chunk_text  text
-embedding   vector(1024)
+embedding   vector(1024)  -- Doubao embedding
 chunk_index integer
 created_at  timestamp
 ```
 
-### friends 表 (Phase 3)
+#### chat_messages 表（聊天消息）
+```sql
+id          uuid (PK)
+user_id     uuid (FK to profiles)
+role        text (user/assistant/system)
+content     text
+created_at  timestamp
+```
 
+#### friends 表（好友关系）
 ```sql
 id          uuid (PK)
 user_id     uuid (FK to profiles)
 friend_id   uuid (FK to profiles)
 created_at  timestamp
+UNIQUE(user_id, friend_id)
+CHECK (user_id != friend_id)
 ```
 
-### friend_requests 表 (Phase 3)
-
+#### friend_requests 表（好友请求）
 ```sql
 id            uuid (PK)
 from_user_id  uuid (FK to profiles)
@@ -300,10 +330,11 @@ to_user_id    uuid (FK to profiles)
 status        text (pending/accepted/rejected)
 created_at    timestamp
 updated_at    timestamp
+UNIQUE(from_user_id, to_user_id)
+CHECK (from_user_id != to_user_id)
 ```
 
-### note_shares 表 (Phase 3)
-
+#### note_shares 表（笔记共享）
 ```sql
 id                   uuid (PK)
 note_id              uuid (FK to notes)
@@ -311,7 +342,25 @@ owner_id             uuid (FK to profiles)
 shared_with_user_id  uuid (FK to profiles)
 permission           text (read/write)
 created_at           timestamp
+UNIQUE(note_id, shared_with_user_id)
+CHECK (owner_id != shared_with_user_id)
 ```
+
+### 关键函数
+
+- `search_notes(query_embedding, match_threshold, match_count)` - 向量搜索（支持共享笔记）
+- `accept_friend_request(request_id)` - 接受好友请求
+- `reject_friend_request(request_id)` - 拒绝好友请求
+- `are_friends(user1_id, user2_id)` - 检查好友关系
+- `get_friends_with_profiles(user_id)` - 获取好友列表（修复重复问题）
+- `get_shared_notes(user_id)` - 获取共享笔记
+
+### 安全特性
+
+- **Row Level Security (RLS)**: 所有表都启用了 RLS
+- **权限控制**: 用户只能访问自己的数据和被授权的共享数据
+- **好友验证**: 只有好友之间才能共享笔记
+- **自动权限**: 通过函数确保数据操作的安全性
 
 ## 开发
 
@@ -334,13 +383,44 @@ npm run build
 npm start
 ```
 
+## 部署说明
+
+### 数据库部署
+
+**新项目部署:**
+```sql
+-- 在 Supabase SQL Editor 中执行
+-- 使用 supabase-schema-complete.sql
+```
+
+### 环境变量
+
+确保 `.env.local` 包含：
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+DOUBAO_API_KEY=your_doubao_api_key
+DEEPSEEK_API_KEY=your_deepseek_api_key
+```
+
 ## 路线图
 
 - [x] Phase 1: 认证 & 笔记管理 ✅
 - [x] Phase 2: AI 聊天助手 ✅
 - [x] Phase 3: 好友系统 & MCP ✅
+- [x] 数据库架构整合 ✅
 
 **🎉 所有计划功能已完成！**
+
+### 未来可能的扩展
+
+- [ ] 笔记标签和分类
+- [ ] 笔记模板
+- [ ] 导出功能（PDF、Markdown）
+- [ ] 移动端适配
+- [ ] 实时协作编辑
+- [ ] 接入第三方 MCP
 
 ## 许可证
 
