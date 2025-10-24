@@ -7,7 +7,7 @@
 
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { getNote, updateNote, deleteNote } from '@/lib/db/notes';
+import { getNoteWithAccess, updateNote, deleteNote } from '@/lib/db/notes';
 import { updateNoteEmbeddings } from '@/lib/embeddings/vectorize';
 import { deleteNoteEmbeddings } from '@/lib/db/embeddings';
 import { handleError } from '@/lib/utils/errors';
@@ -39,7 +39,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const note = await getNote(id, user.id);
+    const note = await getNoteWithAccess(id, user.id);
 
     return NextResponse.json({ note });
   } catch (error) {

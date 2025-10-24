@@ -20,6 +20,13 @@ export interface Note {
   updated_at: string;
 }
 
+export interface NoteWithOwner extends Note {
+  owner?: {
+    username: string;
+    display_name: string | null;
+  };
+}
+
 export interface NoteEmbedding {
   id: string;
   note_id: string;

@@ -3,7 +3,7 @@
  */
 
 import { createClient } from '@/lib/supabase/server';
-import type { Note } from '@/lib/utils/types';
+import type { Note, NoteWithOwner } from '@/lib/utils/types';
 import { NotFoundError } from '@/lib/utils/errors';
 
 /**
@@ -44,6 +44,50 @@ export async function getNote(noteId: string, userId: string): Promise<Note> {
   }
 
   return data;
+}
+
+/**
+ * Get a single note by ID (including shared notes)
+ * This function checks if the user owns the note or has been shared access to it
+ */
+export async function getNoteWithAccess(noteId: string, userId: string): Promise<NoteWithOwner> {
+  const supabase = await createClient();
+
+  // First check if user owns the note
+  const { data: ownedNote, error: ownedError } = await supabase
+    .from('notes')
+    .select('*')
+    .eq('id', noteId)
+    .eq('user_id', userId)
+    .single();
+
+  if (ownedNote && !ownedError) {
+    return ownedNote;
+  }
+
+  // If not owned, check if user has shared access
+  const { data: sharedNote, error: sharedError } = await supabase
+    .from('notes')
+    .select(`
+      *,
+      note_shares!inner(
+        permission,
+        shared_with_user_id
+      ),
+      owner:profiles!notes_user_id_fkey(
+        username,
+        display_name
+      )
+    `)
+    .eq('id', noteId)
+    .eq('note_shares.shared_with_user_id', userId)
+    .single();
+
+  if (sharedError || !sharedNote) {
+    throw new NotFoundError('Note not found or access denied');
+  }
+
+  return sharedNote;
 }
 
 /**

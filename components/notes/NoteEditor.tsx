@@ -19,9 +19,10 @@ import Link from 'next/link';
 interface NoteEditorProps {
   note?: Note;
   onSave?: (note: Note) => void;
+  canEdit?: boolean;
 }
 
-export function NoteEditor({ note, onSave }: NoteEditorProps) {
+export function NoteEditor({ note, onSave, canEdit = true }: NoteEditorProps) {
   const [title, setTitle] = useState(note?.title || '');
   const [content, setContent] = useState(note?.content || '');
   const [isShared, setIsShared] = useState(note?.is_shared || false);
@@ -111,7 +112,7 @@ export function NoteEditor({ note, onSave }: NoteEditorProps) {
               placeholder="Enter note title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              disabled={saving}
+              disabled={saving || !canEdit}
             />
           </div>
 
@@ -124,30 +125,34 @@ export function NoteEditor({ note, onSave }: NoteEditorProps) {
               placeholder="Write your note here..."
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              disabled={saving}
+              disabled={saving || !canEdit}
               rows={15}
               className="resize-none"
             />
           </div>
 
-          <div className="flex items-center space-x-2">
-            <input
-              id="is_shared"
-              type="checkbox"
-              checked={isShared}
-              onChange={(e) => setIsShared(e.target.checked)}
-              disabled={saving}
-              className="rounded"
-            />
-            <label htmlFor="is_shared" className="text-sm font-medium cursor-pointer">
-              Share this note with friends
-            </label>
-          </div>
+          {canEdit && (
+            <div className="flex items-center space-x-2">
+              <input
+                id="is_shared"
+                type="checkbox"
+                checked={isShared}
+                onChange={(e) => setIsShared(e.target.checked)}
+                disabled={saving}
+                className="rounded"
+              />
+              <label htmlFor="is_shared" className="text-sm font-medium cursor-pointer">
+                Share this note with friends
+              </label>
+            </div>
+          )}
 
-          <Button type="submit" disabled={saving} className="w-full">
-            <Save className="w-4 h-4 mr-2" />
-            {saving ? 'Saving...' : note ? 'Update Note' : 'Create Note'}
-          </Button>
+          {canEdit && (
+            <Button type="submit" disabled={saving} className="w-full">
+              <Save className="w-4 h-4 mr-2" />
+              {saving ? 'Saving...' : note ? 'Update Note' : 'Create Note'}
+            </Button>
+          )}
         </form>
       </CardContent>
     </Card>
