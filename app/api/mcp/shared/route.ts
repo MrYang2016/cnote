@@ -1,5 +1,5 @@
 /**
- * Shared MCP Server API
+ * Shared  Server API
  * Phase 3
  */
 
@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
         )
     }
   } catch (error) {
-    console.error('Error in MCP shared server:', error)
+    console.error('Error in  shared server:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
