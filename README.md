@@ -1,4 +1,4 @@
-# AI Note System - Phase 1
+# AI Note System
 
 一个智能笔记系统，支持用户认证、笔记管理和自动向量化，为 AI 驱动的语义搜索做准备。
 
@@ -29,8 +29,8 @@
 - **框架**: Next.js 16 (App Router)
 - **数据库**: Supabase (PostgreSQL + pgvector)
 - **认证**: Supabase Auth
-- **向量化**: Doubao Embedding API
-- **LLM**: DeepSeek (Phase 2)
+- **向量化**: Doubao Embedding API (`doubao-embedding-text-240715`)
+- **LLM**: DeepSeek (`deepseek-chat`)
 - **UI**: Tailwind CSS + shadcn/ui + Lucide Icons
 - **语言**: TypeScript
 
@@ -44,7 +44,35 @@ npm install
 
 ### 2. 配置环境变量
 
-环境变量已配置在 `.env.local`
+1. 复制环境变量示例文件：
+   ```bash
+   cp .env.example .env.local
+   ```
+
+2. 编辑 `.env.local` 文件，填入你的实际配置：
+   ```env
+   # Supabase 配置
+   NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+   SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+   
+   # AI 服务配置
+   DOUBAO_API_KEY=your_doubao_api_key
+   DEEPSEEK_API_KEY=your_deepseek_api_key
+   ```
+
+3. 获取 Supabase 配置：
+   - 登录 [Supabase](https://supabase.com) 控制台
+   - 选择你的项目
+   - 进入 Settings → API
+   - 复制 Project URL 和 anon public key
+   - 复制 service_role secret key
+
+4. 获取 AI 服务 API Key：
+   - **Doubao**: 访问 [豆包大模型](https://www.volcengine.com/product/doubao) 获取 API Key
+     - 使用模型：`doubao-embedding-text-240715` (文本向量化)
+   - **DeepSeek**: 访问 [DeepSeek](https://platform.deepseek.com) 获取 API Key
+     - 使用模型：`deepseek-chat` (AI 聊天对话)
 
 ### 3. 设置 Supabase 数据库
 
@@ -126,6 +154,7 @@ cnote/
 │   ├── mcp/                      # MCP 服务器
 │   └── utils/                    # 工具函数
 ├── middleware.ts                 # Next.js 中间件（认证）
+├── .env.example                 # 环境变量示例文件
 └── supabase-schema-complete.sql  # 完整数据库架构
 ```
 
@@ -393,16 +422,28 @@ npm start
 -- 使用 supabase-schema-complete.sql
 ```
 
-### 环境变量
+### 环境变量配置
 
-确保 `.env.local` 包含：
-```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-DOUBAO_API_KEY=your_doubao_api_key
-DEEPSEEK_API_KEY=your_deepseek_api_key
-```
+**必需的环境变量：**
+
+| 变量名 | 说明 | 获取方式 |
+|--------|------|----------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase 项目 URL | Supabase 控制台 → Settings → API |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase 匿名密钥 | Supabase 控制台 → Settings → API |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase 服务角色密钥 | Supabase 控制台 → Settings → API |
+| `DOUBAO_API_KEY` | 豆包大模型 API Key | [豆包大模型平台](https://www.volcengine.com/product/doubao) |
+| `DEEPSEEK_API_KEY` | DeepSeek API Key | [DeepSeek 平台](https://platform.deepseek.com) |
+
+**使用的模型：**
+- **Doubao**: `doubao-embedding-text-240715` - 用于文本向量化，生成 1024 维向量
+- **DeepSeek**: `deepseek-chat` - 用于 AI 聊天对话，支持中文和英文
+
+**配置步骤：**
+1. 复制 `.env.example` 到 `.env.local`
+2. 填入上述环境变量的实际值
+3. 重启开发服务器
+
+> **注意**: `.env.local` 文件不会被提交到版本控制，请妥善保管你的 API Key。
 
 ## 路线图
 
