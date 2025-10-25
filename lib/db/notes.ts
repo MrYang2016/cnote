@@ -97,7 +97,8 @@ export async function createNote(
   userId: string,
   title: string,
   content: string,
-  isShared: boolean = false
+  isShared: boolean = false,
+  inBlog: boolean = false
 ): Promise<Note> {
   const supabase = await createClient();
 
@@ -108,6 +109,7 @@ export async function createNote(
       title,
       content,
       is_shared: isShared,
+      in_blog: inBlog,
     })
     .select()
     .single();
@@ -126,7 +128,7 @@ export async function createNote(
 export async function updateNote(
   noteId: string,
   userId: string,
-  updates: { title?: string; content?: string; is_shared?: boolean }
+  updates: { title?: string; content?: string; is_shared?: boolean; in_blog?: boolean }
 ): Promise<Note> {
   const supabase = await createClient();
 

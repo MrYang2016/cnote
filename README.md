@@ -24,6 +24,13 @@
 - ✅ MCP 集成（Private & Shared MCP Server）
 - ✅ AI 聊天增强（支持访问共享笔记）
 
+### 博客功能 (已新增) ✅
+- ✅ 将笔记发布为公开博客文章
+- ✅ 博客列表页面（按用户展示）
+- ✅ 单篇博客文章详情页
+- ✅ 公开访问（无需登录）
+- ✅ 友好URL（/{username}/blog）
+
 ## 技术栈
 
 - **框架**: Next.js 16 (App Router)
@@ -80,14 +87,17 @@ npm install
 1. 登录 [Supabase](https://supabase.com) 控制台
 2. 打开 SQL Editor
 3. 执行 `supabase-schema-complete.sql` 中的完整 SQL 语句
+4. 执行 `supabase-blog-migration.sql` 以启用博客功能
 
-> **说明**: `supabase-schema-complete.sql` 是完整的数据库架构文件，包含了所有功能模块和优化。
+> **说明**: 
+> - `supabase-schema-complete.sql` 是完整的数据库架构文件，包含了所有功能模块和优化
+> - `supabase-blog-migration.sql` 添加博客功能所需的字段和策略
 
 **这将创建完整的数据库结构：**
 
 **基础表：**
 - `profiles` 表（用户资料）
-- `notes` 表（笔记）
+- `notes` 表（笔记，包含博客字段）
 - `note_embeddings` 表（向量化数据）
 
 **聊天功能表：**
@@ -99,6 +109,10 @@ npm install
 
 **笔记共享表：**
 - `note_shares` 表（笔记共享）
+
+**博客功能：**
+- `notes.in_blog` 字段（标记博客文章）
+- 公开访问的 RLS 策略
 
 **功能函数：**
 - `search_notes()` - 向量搜索（支持共享笔记）
@@ -149,13 +163,20 @@ cnote/
 ├── lib/                          # 工具库
 │   ├── supabase/                 # Supabase 客户端
 │   ├── db/                       # 数据库操作
+│   │   ├── blog.ts              # 博客数据库操作
+│   │   ├── notes.ts             # 笔记数据库操作
+│   │   └── ...                  # 其他数据库操作
 │   ├── embeddings/               # 向量化工具
 │   ├── llm/                      # LLM 集成 (DeepSeek)
 │   ├── mcp/                      # MCP 服务器
 │   └── utils/                    # 工具函数
+├── app/[username]/blog/          # 博客页面（公开访问）
+│   ├── page.tsx                  # 博客列表页
+│   └── [id]/page.tsx             # 单篇博客文章页
 ├── middleware.ts                 # Next.js 中间件（认证）
 ├── .env.example                 # 环境变量示例文件
-└── supabase-schema-complete.sql  # 完整数据库架构
+├── supabase-schema-complete.sql  # 完整数据库架构
+└── supabase-blog-migration.sql   # 博客功能迁移脚本
 ```
 
 ## 使用说明
@@ -234,6 +255,29 @@ cnote/
 **权限说明：**
 - **Read**: 只能查看笔记
 - **Write**: 可以编辑笔记（但不能删除）
+
+### 博客功能 📝 (已新增)
+
+**发布博客文章：**
+1. 创建或编辑笔记
+2. 勾选 "Publish as blog post" 选项
+3. 保存笔记
+4. 文章自动发布到你的博客
+
+**访问博客：**
+- 点击 Header 右上角的 "Blog" 按钮
+- 或直接访问 `/{username}/blog`
+- 任何人都可以访问，无需登录
+
+**博客页面：**
+- **博客列表**: `/{username}/blog` - 显示所有博客文章
+- **单篇文章**: `/{username}/blog/{id}` - 显示文章详情
+
+**功能特点：**
+- ✅ 公开访问，无需登录
+- ✅ 隐私控制，选择性发布
+- ✅ 友好URL，使用username
+- ✅ 响应式设计，适配移动端
 
 ### MCP 服务器 🔌 (Phase 3)
 
@@ -317,6 +361,7 @@ user_id     uuid (FK to profiles)
 title       text
 content     text
 is_shared   boolean
+in_blog     boolean  -- 是否发布为博客（新增）
 created_at  timestamp
 updated_at  timestamp
 ```
@@ -451,6 +496,7 @@ npm start
 - [x] Phase 2: AI 聊天助手 ✅
 - [x] Phase 3: 好友系统 & MCP ✅
 - [x] 数据库架构整合 ✅
+- [x] 博客功能 ✅
 
 **🎉 所有计划功能已完成！**
 
@@ -462,10 +508,19 @@ npm start
 - [ ] 移动端适配
 - [ ] 实时协作编辑
 - [ ] 接入第三方 MCP
+- [ ] 博客评论功能
+- [ ] 博客 RSS 订阅
 
 ## 许可证
 
 MIT
+
+## 文档
+
+- [博客功能说明](docs/BLOG_FEATURE.md) - 博客功能详细说明
+- [博客快速开始](docs/BLOG_QUICKSTART.md) - 博客功能快速入门指南
+- [架构图](docs/ARCHITECTURE_DIAGRAM.md) - 系统架构说明
+- [演示脚本](docs/DEMO_SCRIPT.md) - 功能演示流程
 
 ## 技术支持
 

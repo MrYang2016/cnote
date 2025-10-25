@@ -18,6 +18,7 @@ const updateNoteSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200, 'Title too long').optional(),
   content: z.string().optional(),
   is_shared: z.boolean().optional(),
+  in_blog: z.boolean().optional(),
 });
 
 /**

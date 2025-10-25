@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import type { Note } from '@/lib/utils/types';
-import { Save, ArrowLeft } from 'lucide-react';
+import { Save, ArrowLeft, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 
 interface NoteEditorProps {
@@ -26,6 +26,7 @@ export function NoteEditor({ note, onSave, canEdit = true }: NoteEditorProps) {
   const [title, setTitle] = useState(note?.title || '');
   const [content, setContent] = useState(note?.content || '');
   const [isShared, setIsShared] = useState(note?.is_shared || false);
+  const [inBlog, setInBlog] = useState(note?.in_blog || false);
   const [saving, setSaving] = useState(false);
   const router = useRouter();
 
@@ -45,7 +46,7 @@ export function NoteEditor({ note, onSave, canEdit = true }: NoteEditorProps) {
         const response = await fetch(`/api/notes/${note.id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title, content, is_shared: isShared }),
+          body: JSON.stringify({ title, content, is_shared: isShared, in_blog: inBlog }),
         });
 
         if (!response.ok) {
@@ -64,7 +65,7 @@ export function NoteEditor({ note, onSave, canEdit = true }: NoteEditorProps) {
         const response = await fetch('/api/notes', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title, content, is_shared: isShared }),
+          body: JSON.stringify({ title, content, is_shared: isShared, in_blog: inBlog }),
         });
 
         if (!response.ok) {
@@ -132,18 +133,34 @@ export function NoteEditor({ note, onSave, canEdit = true }: NoteEditorProps) {
           </div>
 
           {canEdit && (
-            <div className="flex items-center space-x-2">
-              <input
-                id="is_shared"
-                type="checkbox"
-                checked={isShared}
-                onChange={(e) => setIsShared(e.target.checked)}
-                disabled={saving}
-                className="rounded"
-              />
-              <label htmlFor="is_shared" className="text-sm font-medium cursor-pointer">
-                Share this note with friends
-              </label>
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <input
+                  id="is_shared"
+                  type="checkbox"
+                  checked={isShared}
+                  onChange={(e) => setIsShared(e.target.checked)}
+                  disabled={saving}
+                  className="rounded"
+                />
+                <label htmlFor="is_shared" className="text-sm font-medium cursor-pointer">
+                  Share this note with friends
+                </label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <input
+                  id="in_blog"
+                  type="checkbox"
+                  checked={inBlog}
+                  onChange={(e) => setInBlog(e.target.checked)}
+                  disabled={saving}
+                  className="rounded"
+                />
+                <label htmlFor="in_blog" className="text-sm font-medium cursor-pointer flex items-center gap-1">
+                  <BookOpen className="w-4 h-4" />
+                  Publish as blog post
+                </label>
+              </div>
             </div>
           )}
 

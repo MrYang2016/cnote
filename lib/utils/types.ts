@@ -16,6 +16,7 @@ export interface Note {
   title: string;
   content: string;
   is_shared: boolean;
+  in_blog: boolean;
   created_at: string;
   updated_at: string;
 }
