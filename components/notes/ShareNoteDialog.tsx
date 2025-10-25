@@ -124,7 +124,7 @@ export function ShareNoteDialog({ noteId, currentShares = [] }: ShareNoteDialogP
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" className="cursor-pointer">
           <Share2 className="h-4 w-4 mr-2" />
           Share
         </Button>
@@ -180,8 +180,8 @@ export function ShareNoteDialog({ noteId, currentShares = [] }: ShareNoteDialogP
                     <Card
                       key={friend.friend_id}
                       className={`p-3 cursor-pointer transition-colors ${isSelected
-                          ? 'bg-primary/10 border-primary'
-                          : 'hover:bg-muted/50'
+                        ? 'bg-primary/10 border-primary'
+                        : 'hover:bg-muted/50'
                         } ${alreadyShared ? 'opacity-50' : ''}`}
                       onClick={() => !alreadyShared && toggleFriend(friend.friend_id)}
                     >
@@ -211,12 +211,13 @@ export function ShareNoteDialog({ noteId, currentShares = [] }: ShareNoteDialogP
 
           {/* 操作按钮 */}
           <div className="flex gap-2 justify-end">
-            <Button variant="outline" onClick={() => setOpen(false)}>
+            <Button variant="outline" onClick={() => setOpen(false)} className="cursor-pointer">
               Cancel
             </Button>
             <Button
               onClick={handleShare}
               disabled={sharing || selectedFriends.size === 0}
+              className="cursor-pointer"
             >
               {sharing ? (
                 <>

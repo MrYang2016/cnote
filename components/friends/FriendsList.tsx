@@ -107,6 +107,7 @@ export function FriendsList() {
               size="sm"
               onClick={() => handleRemoveFriend(friend.friend_id)}
               disabled={removingId === friend.friend_id}
+              className="cursor-pointer"
             >
               {removingId === friend.friend_id ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

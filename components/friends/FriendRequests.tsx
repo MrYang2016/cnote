@@ -138,6 +138,7 @@ export function FriendRequests() {
                       size="sm"
                       onClick={() => handleRequest(request.id, 'accept')}
                       disabled={processingId === request.id}
+                      className="cursor-pointer"
                     >
                       {processingId === request.id ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -150,6 +151,7 @@ export function FriendRequests() {
                       size="sm"
                       onClick={() => handleRequest(request.id, 'reject')}
                       disabled={processingId === request.id}
+                      className="cursor-pointer"
                     >
                       <X className="h-4 w-4" />
                     </Button>
@@ -189,6 +191,7 @@ export function FriendRequests() {
                     size="sm"
                     onClick={() => handleRequest(request.id, 'cancel')}
                     disabled={processingId === request.id}
+                    className="cursor-pointer"
                   >
                     {processingId === request.id ? (
                       <Loader2 className="h-4 w-4 animate-spin" />

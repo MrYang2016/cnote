@@ -9,12 +9,16 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import type { Note } from '@/lib/utils/types';
-import { Save, ArrowLeft, BookOpen } from 'lucide-react';
-import Link from 'next/link';
+import { Save, ArrowLeft, BookOpen, Eye, Edit, Loader2 } from 'lucide-react';
+import { MarkdownEditor } from './MarkdownEditor';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeHighlight from 'rehype-highlight';
+import 'highlight.js/styles/github-dark.css';
 
 interface NoteEditorProps {
   note?: Note;
@@ -28,7 +32,22 @@ export function NoteEditor({ note, onSave, canEdit = true }: NoteEditorProps) {
   const [isShared, setIsShared] = useState(note?.is_shared || false);
   const [inBlog, setInBlog] = useState(note?.in_blog || false);
   const [saving, setSaving] = useState(false);
+  const [isNavigatingBack, setIsNavigatingBack] = useState(false);
+  // Default to preview mode for readonly, edit mode for editable
+  const [editMode, setEditMode] = useState(canEdit);
   const router = useRouter();
+
+  const handleBackClick = async () => {
+    if (isNavigatingBack) return; // Prevent multiple clicks
+
+    setIsNavigatingBack(true);
+    try {
+      router.push('/notes');
+    } catch (error) {
+      console.error('Navigation error:', error);
+      setIsNavigatingBack(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,12 +112,20 @@ export function NoteEditor({ note, onSave, canEdit = true }: NoteEditorProps) {
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>{note ? 'Edit Note' : 'Create New Note'}</CardTitle>
-          <Link href="/notes">
-            <Button variant="ghost" size="sm">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleBackClick}
+            disabled={isNavigatingBack}
+            className={`cursor-pointer ${isNavigatingBack ? 'opacity-75' : ''}`}
+          >
+            {isNavigatingBack ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button>
-          </Link>
+            )}
+            Back
+          </Button>
         </div>
       </CardHeader>
       <CardContent>
@@ -118,18 +145,56 @@ export function NoteEditor({ note, onSave, canEdit = true }: NoteEditorProps) {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="content" className="text-sm font-medium">
-              Content
-            </label>
-            <Textarea
-              id="content"
-              placeholder="Write your note here..."
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              disabled={saving || !canEdit}
-              rows={15}
-              className="resize-none"
-            />
+            <div className="flex items-center justify-between">
+              <label htmlFor="content" className="text-sm font-medium">
+                Content
+              </label>
+              {canEdit && (
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant={editMode ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setEditMode(true)}
+                    className="cursor-pointer"
+                  >
+                    <Edit className="w-4 h-4 mr-1" />
+                    Edit
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={!editMode ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setEditMode(false)}
+                    className="cursor-pointer"
+                  >
+                    <Eye className="w-4 h-4 mr-1" />
+                    Preview
+                  </Button>
+                </div>
+              )}
+            </div>
+            {canEdit && editMode ? (
+              <MarkdownEditor
+                value={content}
+                onChange={(val) => setContent(val || '')}
+                placeholder="Write your note here... You can use markdown syntax for formatting, code blocks, images, etc."
+                disabled={saving}
+              />
+            ) : (
+              <div className="min-h-[400px] p-4 border rounded-md bg-card prose prose-sm max-w-none dark:prose-invert">
+                {content ? (
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    rehypePlugins={[rehypeHighlight]}
+                  >
+                    {content}
+                  </ReactMarkdown>
+                ) : (
+                  <p className="text-muted-foreground">No content yet...</p>
+                )}
+              </div>
+            )}
           </div>
 
           {canEdit && (
@@ -141,7 +206,7 @@ export function NoteEditor({ note, onSave, canEdit = true }: NoteEditorProps) {
                   checked={isShared}
                   onChange={(e) => setIsShared(e.target.checked)}
                   disabled={saving}
-                  className="rounded"
+                  className="rounded cursor-pointer"
                 />
                 <label htmlFor="is_shared" className="text-sm font-medium cursor-pointer">
                   Share this note with friends
@@ -154,7 +219,7 @@ export function NoteEditor({ note, onSave, canEdit = true }: NoteEditorProps) {
                   checked={inBlog}
                   onChange={(e) => setInBlog(e.target.checked)}
                   disabled={saving}
-                  className="rounded"
+                  className="rounded cursor-pointer"
                 />
                 <label htmlFor="in_blog" className="text-sm font-medium cursor-pointer flex items-center gap-1">
                   <BookOpen className="w-4 h-4" />
@@ -165,7 +230,7 @@ export function NoteEditor({ note, onSave, canEdit = true }: NoteEditorProps) {
           )}
 
           {canEdit && (
-            <Button type="submit" disabled={saving} className="w-full">
+            <Button type="submit" disabled={saving} className="w-full cursor-pointer">
               <Save className="w-4 h-4 mr-2" />
               {saving ? 'Saving...' : note ? 'Update Note' : 'Create Note'}
             </Button>

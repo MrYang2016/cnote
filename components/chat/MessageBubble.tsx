@@ -95,7 +95,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
                   a: ({ children, href, ...props }) => (
                     <a
                       href={href}
-                      className="text-primary hover:underline"
+                      className="text-primary hover:underline cursor-pointer"
                       target="_blank"
                       rel="noopener noreferrer"
                       {...props}

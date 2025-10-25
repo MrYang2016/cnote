@@ -3,12 +3,10 @@
  * Displays all notes for the authenticated user
  */
 
-import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { getNotes } from '@/lib/db/notes';
 import { NotesList } from '@/components/notes/NotesList';
-import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { NewNoteButton } from '@/components/notes/NewNoteButton';
 
 export default async function NotesPage() {
   const supabase = await createClient();
@@ -31,12 +29,7 @@ export default async function NotesPage() {
             Manage and organize your notes with AI-powered search
           </p>
         </div>
-        <Link href="/notes/new">
-          <Button>
-            <Plus className="w-4 h-4 mr-2" />
-            New Note
-          </Button>
-        </Link>
+        <NewNoteButton />
       </div>
 
       <NotesList notes={notes} />

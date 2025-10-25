@@ -177,6 +177,7 @@ export function ChatInterface() {
             variant="outline"
             size="sm"
             onClick={() => setShowClearDialog(true)}
+            className="cursor-pointer"
           >
             <Trash2 className="w-4 h-4 mr-2" />
             Clear History
@@ -222,7 +223,7 @@ export function ChatInterface() {
           className="resize-none"
           rows={3}
         />
-        <Button type="submit" disabled={loading || !input.trim()} size="lg">
+        <Button type="submit" disabled={loading || !input.trim()} size="lg" className="cursor-pointer">
           {loading ? (
             <Loader2 className="w-4 h-4 animate-spin" />
           ) : (
@@ -244,12 +245,14 @@ export function ChatInterface() {
             <Button
               variant="outline"
               onClick={() => setShowClearDialog(false)}
+              className="cursor-pointer"
             >
               Cancel
             </Button>
             <Button
               variant="destructive"
               onClick={handleClearHistory}
+              className="cursor-pointer"
             >
               <Trash2 className="w-4 h-4 mr-2" />
               Clear History

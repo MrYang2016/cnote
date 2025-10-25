@@ -5,10 +5,10 @@
 
 'use client';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { FileText, MessageSquare, Users, Share2 } from 'lucide-react';
+import { FileText, MessageSquare, Users, Share2, Loader2 } from 'lucide-react';
 
 const navigation = [
   {
@@ -42,33 +42,63 @@ const navigation = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const [loadingItems, setLoadingItems] = useState<Set<string>>(new Set());
+
+  // Clear loading state when pathname changes
+  useEffect(() => {
+    setLoadingItems(new Set());
+  }, [pathname]);
+
+  const handleNavigation = async (href: string, itemName: string) => {
+    if (loadingItems.has(itemName) || pathname === href) return;
+
+    setLoadingItems(prev => new Set(prev).add(itemName));
+    try {
+      router.push(href);
+    } catch (error) {
+      console.error('Navigation error:', error);
+      setLoadingItems(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(itemName);
+        return newSet;
+      });
+    }
+  };
 
   return (
     <aside className="w-64 border-r bg-background min-h-[calc(100vh-4rem)]">
       <nav className="p-4 space-y-2">
         {navigation.map((item) => {
           const isActive = pathname.startsWith(item.href);
+          const isLoading = loadingItems.has(item.name);
           const Icon = item.icon;
 
           return (
-            <Link
+            <button
               key={item.name}
-              href={item.disabled ? '#' : item.href}
-              className={cn(
-                'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
-                isActive
-                  ? 'bg-primary text-primary-foreground'
-                  : item.disabled
-                    ? 'text-muted-foreground cursor-not-allowed opacity-50'
-                    : 'text-foreground hover:bg-accent'
-              )}
-              onClick={(e) => {
-                if (item.disabled) {
-                  e.preventDefault();
+              onClick={() => {
+                if (!item.disabled) {
+                  handleNavigation(item.href, item.name);
                 }
               }}
+              disabled={item.disabled || isLoading}
+              className={cn(
+                'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 w-full text-left',
+                isActive
+                  ? 'bg-primary text-primary-foreground cursor-pointer'
+                  : item.disabled
+                    ? 'text-muted-foreground cursor-not-allowed opacity-50'
+                    : isLoading
+                      ? 'text-foreground opacity-75 cursor-wait'
+                      : 'text-foreground hover:bg-accent cursor-pointer'
+              )}
             >
-              <Icon className="w-5 h-5" />
+              {isLoading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <Icon className="w-5 h-5" />
+              )}
               <div className="flex-1">
                 <div>{item.name}</div>
                 {item.disabled && (
@@ -77,7 +107,7 @@ export function Sidebar() {
                   </div>
                 )}
               </div>
-            </Link>
+            </button>
           );
         })}
       </nav>

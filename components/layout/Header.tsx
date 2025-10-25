@@ -60,7 +60,7 @@ export function Header({ username }: HeaderProps) {
         <div className="flex items-center gap-4">
           {username && (
             <Link href={`/${username}/blog`} target="_blank" rel="noopener noreferrer">
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="cursor-pointer">
                 <BookOpen className="mr-2 h-4 w-4" />
                 Blog
               </Button>
@@ -68,7 +68,7 @@ export function Header({ username }: HeaderProps) {
           )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+              <Button variant="ghost" className="relative h-10 w-10 rounded-full cursor-pointer">
                 <Avatar>
                   <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>

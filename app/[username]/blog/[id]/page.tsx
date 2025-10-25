@@ -9,6 +9,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, User, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeHighlight from 'rehype-highlight';
+import 'highlight.js/styles/github-dark.css';
 
 export default async function BlogPostPage({
   params,
@@ -34,7 +38,7 @@ export default async function BlogPostPage({
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Back button */}
         <Link href={`/${username}/blog`}>
-          <Button variant="ghost" className="mb-6">
+          <Button variant="ghost" className="mb-6 cursor-pointer">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Blog
           </Button>
@@ -61,7 +65,12 @@ export default async function BlogPostPage({
           </CardHeader>
           <CardContent>
             <div className="prose prose-sm max-w-none dark:prose-invert">
-              <div className="whitespace-pre-wrap">{post.content}</div>
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeHighlight]}
+              >
+                {post.content}
+              </ReactMarkdown>
             </div>
           </CardContent>
         </Card>

@@ -97,7 +97,7 @@ export function AddFriendDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
+        <Button className="cursor-pointer">
           <UserPlus className="h-4 w-4 mr-2" />
           Add Friend
         </Button>
@@ -121,6 +121,7 @@ export function AddFriendDialog() {
               onClick={handleSearch}
               disabled={searching}
               variant="secondary"
+              className="cursor-pointer"
             >
               {searching ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -147,6 +148,7 @@ export function AddFriendDialog() {
                       size="sm"
                       onClick={() => handleSendRequest(user.username)}
                       disabled={sendingTo === user.username}
+                      className="cursor-pointer"
                     >
                       {sendingTo === user.username ? (
                         <Loader2 className="h-4 w-4 animate-spin" />

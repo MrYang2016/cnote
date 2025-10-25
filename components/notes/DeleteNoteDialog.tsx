@@ -59,7 +59,7 @@ export function DeleteNoteDialog({ noteId, noteTitle }: DeleteNoteDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="destructive" size="sm">
+        <Button variant="destructive" size="sm" className="cursor-pointer">
           <Trash2 className="w-4 h-4 mr-2" />
           Delete
         </Button>
@@ -73,10 +73,10 @@ export function DeleteNoteDialog({ noteId, noteTitle }: DeleteNoteDialogProps) {
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)} disabled={deleting}>
+          <Button variant="outline" onClick={() => setOpen(false)} disabled={deleting} className="cursor-pointer">
             Cancel
           </Button>
-          <Button variant="destructive" onClick={handleDelete} disabled={deleting}>
+          <Button variant="destructive" onClick={handleDelete} disabled={deleting} className="cursor-pointer">
             {deleting ? 'Deleting...' : 'Delete'}
           </Button>
         </DialogFooter>
