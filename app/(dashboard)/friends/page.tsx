@@ -16,18 +16,18 @@ export const metadata: Metadata = {
 
 export default function FriendsPage() {
   return (
-    <div className="container max-w-4xl py-8">
-      <div className="flex items-center justify-between mb-6">
+    <div className="container max-w-4xl py-4 md:py-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-3xl font-bold">Friends</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-2xl md:text-3xl font-bold">Friends</h1>
+          <p className="text-muted-foreground mt-1 text-sm md:text-base">
             Manage your friends and share notes with them
           </p>
         </div>
         <AddFriendDialog />
       </div>
 
-      <Tabs defaultValue="friends" className="space-y-6">
+      <Tabs defaultValue="friends" className="space-y-4 md:space-y-6">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="friends">My Friends</TabsTrigger>
           <TabsTrigger value="requests">Requests</TabsTrigger>

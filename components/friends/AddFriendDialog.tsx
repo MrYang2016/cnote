@@ -97,9 +97,9 @@ export function AddFriendDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="cursor-pointer">
-          <UserPlus className="h-4 w-4 mr-2" />
-          Add Friend
+        <Button className="cursor-pointer" size="sm">
+          <UserPlus className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">Add Friend</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">

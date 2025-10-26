@@ -27,11 +27,11 @@ export default async function BlogPage({
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto px-4 py-6 md:py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">{user.display_name || user.username}'s Blog</h1>
-          <p className="text-muted-foreground">@{username}</p>
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-4xl font-bold mb-2">{user.display_name || user.username}'s Blog</h1>
+          <p className="text-muted-foreground text-sm md:text-base">@{username}</p>
         </div>
 
         {/* Blog Posts */}
@@ -48,7 +48,7 @@ export default async function BlogPage({
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <CardTitle className="text-2xl mb-2">
+                      <CardTitle className="text-xl md:text-2xl mb-2">
                         <Link
                           href={`/${username}/blog/${post.id}`}
                           className="hover:text-primary transition-colors"
@@ -56,9 +56,9 @@ export default async function BlogPage({
                           {post.title}
                         </Link>
                       </CardTitle>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
-                          <Calendar className="w-4 h-4" />
+                          <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
                           {new Date(post.updated_at).toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'long',
@@ -66,7 +66,7 @@ export default async function BlogPage({
                           })}
                         </div>
                         <div className="flex items-center gap-1">
-                          <User className="w-4 h-4" />
+                          <User className="w-3 h-3 sm:w-4 sm:h-4" />
                           {post.author.display_name || post.author.username}
                         </div>
                       </div>
@@ -74,13 +74,13 @@ export default async function BlogPage({
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground line-clamp-3">
+                  <p className="text-muted-foreground line-clamp-3 text-sm md:text-base">
                     {post.content.substring(0, 200)}
                     {post.content.length > 200 ? '...' : ''}
                   </p>
                   <Link
                     href={`/${username}/blog/${post.id}`}
-                    className="text-primary hover:underline inline-block mt-4"
+                    className="text-primary hover:underline inline-block mt-3 md:mt-4 text-sm md:text-base"
                   >
                     Read more →
                   </Link>

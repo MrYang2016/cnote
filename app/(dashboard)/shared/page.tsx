@@ -13,10 +13,10 @@ export const metadata: Metadata = {
 
 export default function SharedNotesPage() {
   return (
-    <div className="container max-w-6xl py-8">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold">Shared with Me</h1>
-        <p className="text-muted-foreground mt-1">
+    <div className="container max-w-6xl py-4 md:py-8">
+      <div className="mb-4 md:mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold">Shared with Me</h1>
+        <p className="text-muted-foreground mt-1 text-sm md:text-base">
           Notes shared with you by your friends
         </p>
       </div>

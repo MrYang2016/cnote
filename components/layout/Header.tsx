@@ -18,14 +18,15 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { toast } from 'sonner';
-import { LogOut, BookOpen } from 'lucide-react';
+import { LogOut, BookOpen, Menu } from 'lucide-react';
 import Link from 'next/link';
 
 interface HeaderProps {
   username?: string;
+  onMenuClick?: () => void;
 }
 
-export function Header({ username }: HeaderProps) {
+export function Header({ username, onMenuClick }: HeaderProps) {
   const router = useRouter();
   const supabase = createClient();
 
@@ -51,16 +52,26 @@ export function Header({ username }: HeaderProps) {
     : 'U';
 
   return (
-    <header className="border-b bg-background">
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <h1 className="text-xl font-bold">AI Note System</h1>
+    <header className="border-b bg-background sticky top-0 z-40">
+      <div className="container mx-auto px-4 py-3 md:py-4 flex items-center justify-between">
+        <div className="flex items-center gap-3 md:gap-4">
+          {onMenuClick && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+              onClick={onMenuClick}
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+          )}
+          <h1 className="text-lg md:text-xl font-bold">AI Note System</h1>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 md:gap-4">
           {username && (
             <Link href={`/${username}/blog`} target="_blank" rel="noopener noreferrer">
-              <Button variant="ghost" size="sm" className="cursor-pointer">
+              <Button variant="ghost" size="sm" className="cursor-pointer hidden sm:flex">
                 <BookOpen className="mr-2 h-4 w-4" />
                 Blog
               </Button>
@@ -68,9 +79,9 @@ export function Header({ username }: HeaderProps) {
           )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-10 w-10 rounded-full cursor-pointer">
+              <Button variant="ghost" className="relative h-9 w-9 md:h-10 md:w-10 rounded-full cursor-pointer">
                 <Avatar>
-                  <AvatarFallback>{initials}</AvatarFallback>
+                  <AvatarFallback className="text-xs md:text-sm">{initials}</AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>

@@ -31,13 +31,19 @@ export function NewNoteButton() {
       onClick={handleClick}
       disabled={isLoading}
       className={`cursor-pointer ${isLoading ? 'opacity-75' : ''}`}
+      size="sm"
     >
       {isLoading ? (
-        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+        <>
+          <Loader2 className="w-4 h-4 sm:mr-2 animate-spin" />
+          <span className="hidden sm:inline">Creating...</span>
+        </>
       ) : (
-        <Plus className="w-4 h-4 mr-2" />
+        <>
+          <Plus className="w-4 h-4 sm:mr-2" />
+          <span className="hidden sm:inline">New Note</span>
+        </>
       )}
-      {isLoading ? 'Creating...' : 'New Note'}
     </Button>
   );
 }

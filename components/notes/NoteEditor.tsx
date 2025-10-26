@@ -110,8 +110,8 @@ export function NoteEditor({ note, onSave, canEdit = true }: NoteEditorProps) {
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle>{note ? 'Edit Note' : 'Create New Note'}</CardTitle>
+        <div className="flex items-center justify-between gap-3">
+          <CardTitle className="text-lg md:text-xl">{note ? 'Edit Note' : 'Create New Note'}</CardTitle>
           <Button
             variant="ghost"
             size="sm"
@@ -120,11 +120,11 @@ export function NoteEditor({ note, onSave, canEdit = true }: NoteEditorProps) {
             className={`cursor-pointer ${isNavigatingBack ? 'opacity-75' : ''}`}
           >
             {isNavigatingBack ? (
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              <Loader2 className="w-4 h-4 sm:mr-2 animate-spin" />
             ) : (
-              <ArrowLeft className="w-4 h-4 mr-2" />
+              <ArrowLeft className="w-4 h-4 sm:mr-2" />
             )}
-            Back
+            <span className="hidden sm:inline">Back</span>
           </Button>
         </div>
       </CardHeader>
@@ -145,7 +145,7 @@ export function NoteEditor({ note, onSave, canEdit = true }: NoteEditorProps) {
           </div>
 
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <label htmlFor="content" className="text-sm font-medium">
                 Content
               </label>
@@ -158,8 +158,8 @@ export function NoteEditor({ note, onSave, canEdit = true }: NoteEditorProps) {
                     onClick={() => setEditMode(true)}
                     className="cursor-pointer"
                   >
-                    <Edit className="w-4 h-4 mr-1" />
-                    Edit
+                    <Edit className="w-4 h-4 sm:mr-1" />
+                    <span className="hidden sm:inline">Edit</span>
                   </Button>
                   <Button
                     type="button"
@@ -168,8 +168,8 @@ export function NoteEditor({ note, onSave, canEdit = true }: NoteEditorProps) {
                     onClick={() => setEditMode(false)}
                     className="cursor-pointer"
                   >
-                    <Eye className="w-4 h-4 mr-1" />
-                    Preview
+                    <Eye className="w-4 h-4 sm:mr-1" />
+                    <span className="hidden sm:inline">Preview</span>
                   </Button>
                 </div>
               )}
@@ -182,7 +182,7 @@ export function NoteEditor({ note, onSave, canEdit = true }: NoteEditorProps) {
                 disabled={saving}
               />
             ) : (
-              <div className="min-h-[400px] p-4 border rounded-md bg-card prose prose-sm max-w-none dark:prose-invert">
+              <div className="min-h-[300px] md:min-h-[400px] p-3 md:p-4 border rounded-md bg-card prose prose-sm max-w-none dark:prose-invert overflow-x-auto">
                 {content ? (
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm]}
@@ -231,7 +231,7 @@ export function NoteEditor({ note, onSave, canEdit = true }: NoteEditorProps) {
 
           {canEdit && (
             <Button type="submit" disabled={saving} className="w-full cursor-pointer">
-              <Save className="w-4 h-4 mr-2" />
+              <Save className="w-4 h-4 sm:mr-2" />
               {saving ? 'Saving...' : note ? 'Update Note' : 'Create Note'}
             </Button>
           )}

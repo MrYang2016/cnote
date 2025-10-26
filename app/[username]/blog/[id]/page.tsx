@@ -35,22 +35,22 @@ export default async function BlogPostPage({
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto px-4 py-6 md:py-8">
         {/* Back button */}
         <Link href={`/${username}/blog`}>
-          <Button variant="ghost" className="mb-6 cursor-pointer">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Blog
+          <Button variant="ghost" className="mb-4 md:mb-6 cursor-pointer" size="sm">
+            <ArrowLeft className="w-4 h-4 sm:mr-2" />
+            <span className="hidden sm:inline">Back to Blog</span>
           </Button>
         </Link>
 
         {/* Blog Post */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-3xl mb-4">{post.title}</CardTitle>
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            <CardTitle className="text-2xl md:text-3xl mb-3 md:mb-4">{post.title}</CardTitle>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
-                <Calendar className="w-4 h-4" />
+                <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
                 {new Date(post.updated_at).toLocaleDateString('en-US', {
                   year: 'numeric',
                   month: 'long',
@@ -58,13 +58,13 @@ export default async function BlogPostPage({
                 })}
               </div>
               <div className="flex items-center gap-1">
-                <User className="w-4 h-4" />
+                <User className="w-3 h-3 sm:w-4 sm:h-4" />
                 {post.author.display_name || post.author.username}
               </div>
             </div>
           </CardHeader>
           <CardContent>
-            <div className="prose prose-sm max-w-none dark:prose-invert">
+            <div className="prose prose-sm max-w-none dark:prose-invert overflow-x-auto">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeHighlight]}

@@ -163,11 +163,11 @@ export function ChatInterface() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)]">
+    <div className="flex flex-col h-[calc(100vh-6rem)] md:h-[calc(100vh-8rem)]">
       {/* Chat Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
         <div>
-          <h2 className="text-2xl font-bold">AI Assistant</h2>
+          <h2 className="text-xl md:text-2xl font-bold">AI Assistant</h2>
           <p className="text-sm text-muted-foreground">
             Ask questions about your notes
           </p>
@@ -179,8 +179,8 @@ export function ChatInterface() {
             onClick={() => setShowClearDialog(true)}
             className="cursor-pointer"
           >
-            <Trash2 className="w-4 h-4 mr-2" />
-            Clear History
+            <Trash2 className="w-4 h-4 sm:mr-2" />
+            <span className="hidden sm:inline">Clear History</span>
           </Button>
         )}
       </div>
@@ -218,12 +218,12 @@ export function ChatInterface() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Ask a question about your notes... (Shift+Enter for new line)"
+          placeholder="Ask a question about your notes..."
           disabled={loading}
-          className="resize-none"
-          rows={3}
+          className="resize-none text-sm md:text-base"
+          rows={2}
         />
-        <Button type="submit" disabled={loading || !input.trim()} size="lg" className="cursor-pointer">
+        <Button type="submit" disabled={loading || !input.trim()} size="lg" className="cursor-pointer shrink-0">
           {loading ? (
             <Loader2 className="w-4 h-4 animate-spin" />
           ) : (
