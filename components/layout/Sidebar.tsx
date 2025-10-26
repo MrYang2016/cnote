@@ -8,7 +8,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { FileText, MessageSquare, Users, Share2, Loader2 } from 'lucide-react';
+import { FileText, MessageSquare, Users, Share2, Loader2, BookOpen } from 'lucide-react';
 
 const navigation = [
   {
@@ -38,13 +38,22 @@ const navigation = [
     description: 'Manage friends',
     disabled: false,
   },
+  {
+    name: 'Blog',
+    href: 'blog', // This will be handled dynamically with username
+    icon: BookOpen,
+    description: 'View blog',
+    disabled: false,
+    isExternal: true, // Opens in new tab
+  },
 ];
 
 interface SidebarProps {
   onNavigate?: () => void;
+  username?: string;
 }
 
-export function Sidebar({ onNavigate }: SidebarProps) {
+export function Sidebar({ onNavigate, username }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [loadingItems, setLoadingItems] = useState<Set<string>>(new Set());
@@ -54,16 +63,25 @@ export function Sidebar({ onNavigate }: SidebarProps) {
     setLoadingItems(new Set());
   }, [pathname]);
 
-  const handleNavigation = async (href: string, itemName: string) => {
-    if (loadingItems.has(itemName) || pathname === href) return;
+  const handleNavigation = async (href: string, itemName: string, isExternal?: boolean) => {
+    if (loadingItems.has(itemName)) return;
+
+    // Close mobile menu if callback provided
+    if (onNavigate) {
+      onNavigate();
+    }
+
+    if (isExternal) {
+      // For external links (like blog), open in new tab
+      window.open(href, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
+    if (pathname === href) return;
 
     setLoadingItems(prev => new Set(prev).add(itemName));
     try {
       router.push(href);
-      // Close mobile menu if callback provided
-      if (onNavigate) {
-        onNavigate();
-      }
     } catch (error) {
       console.error('Navigation error:', error);
       setLoadingItems(prev => {
@@ -82,12 +100,15 @@ export function Sidebar({ onNavigate }: SidebarProps) {
           const isLoading = loadingItems.has(item.name);
           const Icon = item.icon;
 
+          // Handle blog link
+          const href = item.name === 'Blog' && username ? `/${username}/blog` : item.href;
+
           return (
             <button
               key={item.name}
               onClick={() => {
                 if (!item.disabled) {
-                  handleNavigation(item.href, item.name);
+                  handleNavigation(href, item.name, item.isExternal);
                 }
               }}
               disabled={item.disabled || isLoading}
@@ -124,7 +145,7 @@ export function Sidebar({ onNavigate }: SidebarProps) {
 }
 
 // Mobile Sidebar Content Component
-export function MobileSidebarContent({ onNavigate }: SidebarProps) {
+export function MobileSidebarContent({ onNavigate, username }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [loadingItems, setLoadingItems] = useState<Set<string>>(new Set());
@@ -133,15 +154,25 @@ export function MobileSidebarContent({ onNavigate }: SidebarProps) {
     setLoadingItems(new Set());
   }, [pathname]);
 
-  const handleNavigation = async (href: string, itemName: string) => {
-    if (loadingItems.has(itemName) || pathname === href) return;
+  const handleNavigation = async (href: string, itemName: string, isExternal?: boolean) => {
+    if (loadingItems.has(itemName)) return;
+
+    // Close mobile menu if callback provided
+    if (onNavigate) {
+      onNavigate();
+    }
+
+    if (isExternal) {
+      // For external links (like blog), open in new tab
+      window.open(href, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
+    if (pathname === href) return;
 
     setLoadingItems(prev => new Set(prev).add(itemName));
     try {
       router.push(href);
-      if (onNavigate) {
-        onNavigate();
-      }
     } catch (error) {
       console.error('Navigation error:', error);
       setLoadingItems(prev => {
@@ -159,12 +190,15 @@ export function MobileSidebarContent({ onNavigate }: SidebarProps) {
         const isLoading = loadingItems.has(item.name);
         const Icon = item.icon;
 
+        // Handle blog link
+        const href = item.name === 'Blog' && username ? `/${username}/blog` : item.href;
+
         return (
           <button
             key={item.name}
             onClick={() => {
               if (!item.disabled) {
-                handleNavigation(item.href, item.name);
+                handleNavigation(href, item.name, item.isExternal);
               }
             }}
             disabled={item.disabled || isLoading}

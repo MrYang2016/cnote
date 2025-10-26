@@ -74,9 +74,9 @@ export function Header({ username, onMenuClick }: HeaderProps) {
         <div className="flex items-center gap-2 md:gap-4">
           {username && (
             <Link href={`/${username}/blog`} target="_blank" rel="noopener noreferrer">
-              <Button variant="ghost" size="sm" className="cursor-pointer hidden sm:flex">
+              <Button variant="ghost" size="sm" className="cursor-pointer flex">
                 <BookOpen className="mr-2 h-4 w-4" />
-                Blog
+                <span className="hidden sm:inline">Blog</span>
               </Button>
             </Link>
           )}

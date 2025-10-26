@@ -30,7 +30,7 @@ export function DashboardContent({ children, username }: DashboardContentProps) 
         onMenuClick={() => setMobileMenuOpen(true)}
       />
       <div className="flex">
-        <Sidebar />
+        <Sidebar username={username} />
         <main className="flex-1 p-4 md:p-6">
           {children}
         </main>
@@ -42,7 +42,7 @@ export function DashboardContent({ children, username }: DashboardContentProps) 
           <SheetHeader>
             <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
           </SheetHeader>
-          <MobileSidebarContent onNavigate={() => setMobileMenuOpen(false)} />
+          <MobileSidebarContent username={username} onNavigate={() => setMobileMenuOpen(false)} />
         </SheetContent>
       </Sheet>
     </div>
