@@ -18,8 +18,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { toast } from 'sonner';
-import { LogOut, BookOpen, Menu } from 'lucide-react';
+import { LogOut, BookOpen, Menu, KeyRound } from 'lucide-react';
 import Link from 'next/link';
+import { useState } from 'react';
+import { ChangePasswordDialog } from '@/components/auth/ChangePasswordDialog';
 
 interface HeaderProps {
   username?: string;
@@ -29,6 +31,7 @@ interface HeaderProps {
 export function Header({ username, onMenuClick }: HeaderProps) {
   const router = useRouter();
   const supabase = createClient();
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -95,6 +98,11 @@ export function Header({ username, onMenuClick }: HeaderProps) {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => setChangePasswordOpen(true)}>
+                <KeyRound className="mr-2 h-4 w-4" />
+                <span>Change Password</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout}>
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Log out</span>
@@ -103,6 +111,7 @@ export function Header({ username, onMenuClick }: HeaderProps) {
           </DropdownMenu>
         </div>
       </div>
+      <ChangePasswordDialog open={changePasswordOpen} onOpenChange={setChangePasswordOpen} />
     </header>
   );
 }
